@@ -1,4 +1,4 @@
-import { Length } from "./document/common";
+import { globalWindow,Length } from "./document/common";
 import { ParagraphTab } from "./document/paragraph";
 
 interface TabStop {
@@ -10,7 +10,7 @@ interface TabStop {
 const defaultTab: TabStop = { pos: 0, leader: "none", style: "left" };
 const maxTabs = 50;
 
-export function computePixelToPoint(container: HTMLElement = document.body) {
+export function computePixelToPoint(container: HTMLElement = globalWindow.document.body) {
 	const temp = document.createElement("div");
 	temp.style.width = '100pt';
 	

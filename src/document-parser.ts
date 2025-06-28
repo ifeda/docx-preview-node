@@ -12,7 +12,7 @@ import { parseRunProperties, WmlRun } from './document/run';
 import { parseBookmarkEnd, parseBookmarkStart } from './document/bookmarks';
 import { IDomStyle, IDomSubStyle } from './document/style';
 import { WmlFieldChar, WmlFieldSimple, WmlInstructionText } from './document/fields';
-import { convertLength, LengthUsage, LengthUsageType } from './document/common';
+import { globalWindow,convertLength, LengthUsage, LengthUsageType } from './document/common';
 import { parseVmlElement } from './vml/vml';
 import { WmlComment, WmlCommentRangeEnd, WmlCommentRangeStart, WmlCommentReference } from './comments/elements';
 import { encloseFontFamily } from './utils';
@@ -1549,7 +1549,7 @@ class xmlUtil {
 		for (var i = 0; i < node.childNodes.length; i++) {
 			let n = node.childNodes[i];
 
-			if (n.nodeType == Node.ELEMENT_NODE)
+			if (n.nodeType == globalWindow.Node.ELEMENT_NODE)
 				cb(<Element>n);
 		}
 	}

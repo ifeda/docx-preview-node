@@ -1,3 +1,4 @@
+import { globalWindow } from './document/common';
 import { WordDocument } from './word-document';
 import { DocumentParser } from './document-parser';
 import { HtmlRenderer } from './html-renderer';
@@ -16,10 +17,10 @@ export interface Options {
     renderHeaders: boolean;
     renderFooters: boolean;
     renderFootnotes: boolean;
-	renderEndnotes: boolean;
+    renderEndnotes: boolean;
     ignoreLastRenderedPageBreak: boolean;
-	useBase64URL: boolean;
-	renderChanges: boolean;
+    useBase64URL: boolean;
+    renderChanges: boolean;
     renderComments: boolean;
     renderAltChunks: boolean;
 }
@@ -39,26 +40,26 @@ export const defaultOptions: Options = {
     renderHeaders: true,
     renderFooters: true,
     renderFootnotes: true,
-	renderEndnotes: true,
-	useBase64URL: false,
-	renderChanges: false,
+    renderEndnotes: true,
+    useBase64URL: false,
+    renderChanges: false,
     renderComments: false,
-    renderAltChunks: true
+    renderAltChunks: true,
 }
 
-export function parseAsync(data: Blob | any, userOptions?: Partial<Options>): Promise<any>  {
+export function parseAsync(data: Blob | any, userOptions?: Partial<Options>): Promise<any> {
     const ops = { ...defaultOptions, ...userOptions };
     return WordDocument.load(data, new DocumentParser(ops), ops);
 }
 
 export async function renderDocument(document: any, bodyContainer: HTMLElement, styleContainer?: HTMLElement, userOptions?: Partial<Options>): Promise<any> {
     const ops = { ...defaultOptions, ...userOptions };
-    const renderer = new HtmlRenderer(window.document);
-	return await renderer.render(document, bodyContainer, styleContainer, ops);
+    const renderer = new HtmlRenderer(globalWindow.document);
+    return await renderer.render(document, bodyContainer, styleContainer, ops);
 }
 
 export async function renderAsync(data: Blob | any, bodyContainer: HTMLElement, styleContainer?: HTMLElement, userOptions?: Partial<Options>): Promise<any> {
-	const doc = await parseAsync(data, userOptions);
-	await renderDocument(doc, bodyContainer, styleContainer, userOptions);
+    const doc = await parseAsync(data, userOptions);
+    await renderDocument(doc, bodyContainer, styleContainer, userOptions);
     return doc;
 }

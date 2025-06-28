@@ -1,0 +1,104 @@
+import { defineConfig } from "tsup";
+import { existsSync, copyFile, readFileSync, writeFileSync } from "fs";
+import path from "path";
+const pkg = JSON.parse(
+  readFileSync(path.resolve(process.cwd(), "./package.json"), "utf8")
+);
+let timer = null;
+function buildEnd(options) {
+  if (timer) clearTimeout(timer);
+  timer = setTimeout(() => {
+    timer = null;
+    if (options.copy) {
+      for (const file of options.copy) {
+        const src = path.resolve(file);
+        const dest = path.resolve("dist", path.basename(file));
+        if (existsSync(src))
+          copyFile(src, dest, (err) => {
+            if (err) console.error(err);
+          });
+      }
+    }
+    delete pkg.scripts;
+    delete pkg.devDependencies;
+    writeFileSync(
+      path.resolve(options.outDir, "package.json"),
+      JSON.stringify(pkg, null, 2)
+    );
+  }, 2000);
+}
+const defaults = {
+  copy: [],
+  plugins: [],
+  entry: ["src/index.ts"],
+  outDir: "dist",
+  format: ["cjs"],
+  external: [],
+  dts: true,
+  clean: false,
+  bundle: true,
+  minify: "terser",
+  globalName: undefined,
+  target: "node18",
+  platform: "node",
+  skipNodeModulesBundle: true, // Skip node_modules bundling
+  replaceNodeEnv: true,
+  keepNames: true,
+  loader: {
+    ".json": "json",
+    ".pem": "text",
+    ".crt": "text",
+    ".key": "text",
+    ".txt": "text",
+    ".md": "text",
+    ".html": "text",
+    ".htm": "text",
+    ".png": "dataurl",
+    ".jpg": "dataurl",
+    ".jpeg": "dataurl",
+    ".gif": "dataurl",
+    ".svg": "dataurl",
+    ".webp": "dataurl",
+    ".ico": "dataurl",
+  },
+  splitting: false,
+  sourcemap: false,
+  treeshake: true,
+};
+
+export function createConfig(options) {
+  options = {
+    ...defaults,
+    ...options,
+  };
+  return defineConfig({
+    ...options,
+    esbuildOptions: (opts) => {
+      opts.external = options.external; //fix option.external has no effect, may be a tsup's bug
+    },
+    esbuildPlugins: [
+      ...options.plugins,
+      {
+        name: "custom",
+        setup(build) {
+          const format = build.initialOptions.define.TSUP_FORMAT,
+            distFileName =
+              path.basename(
+                build.initialOptions.entryPoints[0],
+                path.extname(build.initialOptions.entryPoints[0])
+              ) + build.initialOptions.outExtension[".js"];
+          if (format === '"cjs"') {
+            pkg.main = distFileName;
+          }
+          if (format === '"esm"') {
+            pkg.module = distFileName;
+          }
+          if (format === '"iife"') {
+            pkg.browser = distFileName;
+          }
+          build.onEnd(() => buildEnd(options));
+        },
+      },
+    ],
+  });
+}
