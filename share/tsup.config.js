@@ -4,20 +4,19 @@ import path from "path";
 const pkg = JSON.parse(
   readFileSync(path.resolve(process.cwd(), "./package.json"), "utf8")
 );
+const copy = [];
 let timer = null;
 function buildEnd(options) {
   if (timer) clearTimeout(timer);
   timer = setTimeout(() => {
     timer = null;
-    if (options.copy) {
-      for (const file of options.copy) {
-        const src = path.resolve(file);
-        const dest = path.resolve("dist", path.basename(file));
-        if (existsSync(src))
-          copyFile(src, dest, (err) => {
-            if (err) console.error(err);
-          });
-      }
+    for (const file of copy) {
+      const src = path.resolve(file);
+      const dest = path.resolve(options.outDir, path.basename(file));
+      copyFile(src, dest, (err) => {
+        if (err) console.error('[copy] failed:',src,'=>',dest,err);
+        else  console.debug('[copy] success:',src,'=>',dest)
+      });
     }
     delete pkg.scripts;
     delete pkg.devDependencies;
@@ -66,18 +65,27 @@ const defaults = {
   treeshake: true,
 };
 
-export function createConfig(options) {
-  options = {
+export function createConfig(opts) {
+  if(Array.isArray(opts.copy)){
+    opts.copy.forEach(file=>{
+      if(!copy.includes(file))copy.push(file);
+    })
+  }
+  const options = {
     ...defaults,
-    ...options,
+    ...opts,
   };
+  delete options.copy
+  const plugins=options.plugins
+  delete options.plugins
+
   return defineConfig({
     ...options,
     esbuildOptions: (opts) => {
       opts.external = options.external; //fix option.external has no effect, may be a tsup's bug
     },
     esbuildPlugins: [
-      ...options.plugins,
+      ...plugins,
       {
         name: "custom",
         setup(build) {

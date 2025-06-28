@@ -9,7 +9,7 @@ export default [
     minify: true,
   }),
   createConfig({
-    copy: ['Readme.md'],
+    copy: ['README.md'],
     entry: ["src/docx-preview.ts"],
     format: ["iife"],
     globalName:'docx',
