@@ -5,7 +5,7 @@ module.exports = (config) => {
     files: [
       'node_modules/jszip/dist/jszip.js',
       'node_modules/diff/dist/diff.js',
-      'dist/docx-preview.js',
+      'dist/docx-preview.browser.js',
       'tests/**/*spec.js',
       { pattern: 'tests/**/*.docx', included: false },
       { pattern: 'tests/**/*.html', included: false }

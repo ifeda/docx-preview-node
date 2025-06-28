@@ -1,0 +1,26 @@
+{
+  "name": "docx-preview-node",
+  "version": "0.3.5",
+  "license": "Apache-2.0",
+  "keywords": [
+    "word",
+    "docx"
+  ],
+  "author": {
+    "name": "Volodymyr Baydalka"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ifeda/docx-preview-node.git"
+  },
+  "dependencies": {
+    "jsdom": "^26.1.0",
+    "jszip": ">=3.0.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "main": "docx-preview.js",
+  "module": "docx-preview.mjs",
+  "browser": "docx-preview.browser.js"
+}
