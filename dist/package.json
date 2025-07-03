@@ -18,7 +18,7 @@
     "jszip": ">=3.0.0"
   },
   "files": [
-    "dist"
+    "*"
   ],
   "main": "docx-preview.js",
   "module": "docx-preview.mjs",

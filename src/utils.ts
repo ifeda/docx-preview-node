@@ -31,13 +31,18 @@ export function keyBy<T = any>(array: T[], by: (x: T) => any): Record<any, T> {
     }, {});
 }
 
-export function blobToBase64(blob: Blob): Promise<string> {
+export async function blobToBase64(blob: Blob): Promise<string> {
+/*//#if _BROWSER
 	return new Promise((resolve, reject) => {
 		const reader = new FileReader();
 		reader.onloadend = () => resolve(reader.result as string);
 		reader.onerror = () => reject();
 		reader.readAsDataURL(blob);
 	});
+///#else */
+  const arrayBuffer = await blob.arrayBuffer()
+  return `data:application/octet-stream;base64,${Buffer.from(arrayBuffer).toString('base64')}`
+///#endif
 }
 
 export function isObject(item) {

@@ -6,7 +6,7 @@ import {
 	WmlAltChunk,
 	WmlTableRow
 } from './document/dom';
-import { CommonProperties } from './document/common';
+import { globalWindow,CommonProperties } from './document/common';
 import { Options } from './docx-preview';
 import { DocumentElement } from './document/document';
 import { WmlParagraph } from './document/paragraph';
@@ -293,6 +293,7 @@ export class HtmlRenderer {
 		var elem = this.createElement("section", { className });
 
 		if (props) {
+			elem.setAttribute('page',`${props.page}`);
 			if (props.pageMargins) {
 				elem.style.paddingLeft = props.pageMargins.left;
 				elem.style.paddingRight = props.pageMargins.right;
@@ -339,7 +340,7 @@ export class HtmlRenderer {
 
 			const section = pages[i][0];
 			let props = section.sectProps;
-			const pageElement = this.createPageElement(this.className, props);
+			const pageElement = this.createPageElement(this.className, {...props,page:i+1});
 			this.renderStyleValues(document.cssStyle, pageElement);
 
 			this.options.renderHeaders && this.renderHeaderFooter(props.headerRefs, props,
@@ -1247,7 +1248,6 @@ section.${c}>footer { z-index: 1; }
 		var container = this.createSvgElement("svg");
 
 		container.setAttribute("style", elem.cssStyleText);
-
 		const result = this.renderVmlChildElement(elem);
 
 		if (elem.imageHref?.id) {
@@ -1257,11 +1257,12 @@ section.${c}>footer { z-index: 1; }
 
 		container.appendChild(result);
 
-		requestAnimationFrame(() => {
-			const bb = (container.firstElementChild as any).getBBox();
-
-			container.setAttribute("width", `${Math.ceil(bb.x +  bb.width)}`);
-			container.setAttribute("height", `${Math.ceil(bb.y + bb.height)}`);
+		globalWindow.requestAnimationFrame(() => {
+			try{
+				const bb = (container.firstElementChild as any).getBBox();
+				container.setAttribute("width", `${Math.ceil(bb.x +  bb.width)}`);
+				container.setAttribute("height", `${Math.ceil(bb.y + bb.height)}`);
+			}catch(e){}
 		});
 
 		return container;

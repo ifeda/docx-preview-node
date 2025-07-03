@@ -54,6 +54,7 @@ export interface FooterHeaderReference {
 }
 
 export interface SectionProperties {
+    page: number;
     type: SectionType | string;
     pageSize: PageSize,
     pageMargins: PageMargins,

@@ -35,7 +35,10 @@ export const globalWindow = window;
 ///#else */
 import { JSDOM } from "jsdom";
 export const globalWindow = new JSDOM(
-	"<!DOCTYPE html><html><body></body></html>"
+	"<!DOCTYPE html><html><body></body></html>",
+	{
+		pretendToBeVisual: true,
+	}
 ).window;
 ///#endif
 

@@ -20,6 +20,7 @@ function buildEnd(options) {
     }
     delete pkg.scripts;
     delete pkg.devDependencies;
+    pkg.files = ["*"],
     writeFileSync(
       path.resolve(options.outDir, "package.json"),
       JSON.stringify(pkg, null, 2)
